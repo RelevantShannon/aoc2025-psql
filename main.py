@@ -145,13 +145,13 @@ def scaffold_new_day(day: int) -> None:
             print(f"  {f}")
 
 
-def run_day(day: int, part: int, is_test: bool) -> None:
+def run_day(day: int, part: int, is_test: bool, fast: bool = False) -> None:
     """Run the SQL solution for a specific day and part."""
     # Check script files exist
     setup_script = f"./day/{day}/setup.sql"
     part_script = f"./day/{day}/part{part}.sql"
 
-    if not os.path.isfile(setup_script):
+    if not fast and not os.path.isfile(setup_script):
         print(f"Error: Setup script '{setup_script}' does not exist", file=sys.stderr)
         sys.exit(1)
 
@@ -159,29 +159,34 @@ def run_day(day: int, part: int, is_test: bool) -> None:
         print(f"Error: Part script '{part_script}' does not exist", file=sys.stderr)
         sys.exit(1)
 
-    # Read input file
-    input_file = f"day{day}.test.txt" if is_test else f"day{day}.txt"
-    input_path = Path(INPUT_DIR) / input_file
+    if fast:
+        # Use existing container
+        db_url = f"postgresql://{DB_USER}:{DB_PASSWORD}@localhost:{DB_PORT}/{DB_NAME}"
+        run_sql(db_url, part_script)
+    else:
+        # Read input file
+        input_file = f"day{day}.test.txt" if is_test else f"day{day}.txt"
+        input_path = Path(INPUT_DIR) / input_file
 
-    if not input_path.is_file():
-        print(f"Error: Input file '{input_path}' does not exist", file=sys.stderr)
-        sys.exit(1)
+        if not input_path.is_file():
+            print(f"Error: Input file '{input_path}' does not exist", file=sys.stderr)
+            sys.exit(1)
 
-    input_content = input_path.read_text()
+        input_content = input_path.read_text()
 
-    # Create postgres container
-    db_url = create_postgres_container(
-        CONTAINER_NAME,
-        POSTGRES_VERSION,
-        DB_NAME,
-        DB_USER,
-        DB_PASSWORD,
-        DB_PORT,
-    )
+        # Create postgres container
+        db_url = create_postgres_container(
+            CONTAINER_NAME,
+            POSTGRES_VERSION,
+            DB_NAME,
+            DB_USER,
+            DB_PASSWORD,
+            DB_PORT,
+        )
 
-    # Run setup and part scripts
-    run_sql(db_url, setup_script, input_content)
-    run_sql(db_url, part_script)
+        # Run setup and part scripts
+        run_sql(db_url, setup_script, input_content)
+        run_sql(db_url, part_script)
 
 
 def main() -> None:
@@ -190,6 +195,7 @@ def main() -> None:
     parser.add_argument("-d", "--day", type=int, help="Day number (1-25)")
     parser.add_argument("-p", "--part", type=int, choices=[1, 2], help="Part 1 or 2")
     parser.add_argument("-t", "--test", action="store_true", help="Use test input instead of real input")
+    parser.add_argument("-f", "--fast", action="store_true", help="Skip container setup and run part script only")
 
     args = parser.parse_args()
 
@@ -202,7 +208,7 @@ def main() -> None:
     if args.day is None or args.part is None:
         parser.error("Running requires both -d/--day and -p/--part (or use -n/--new to scaffold)")
 
-    run_day(args.day, args.part, args.test)
+    run_day(args.day, args.part, args.test, args.fast)
 
 
 if __name__ == "__main__":
