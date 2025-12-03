@@ -1,0 +1,29 @@
+# In a parameters list, end or start with the comma. Default: end
+comma=start
+
+# In insert statement, add a newline after each comma.
+comma-break=1
+
+# Output format: text or html. Default: text.
+format=text
+
+# Change the case of the reserved keyword. Default is uppercase: 2.
+# Values: 0=>unchanged, 1=>lowercase, 2=>uppercase, 3=>capitalize.
+keyword-case=2
+
+# Change the case of the data type name. Default is lowercase: 1.
+# Values: 0=>unchanged, 1=>lowercase, 2=>uppercase, 3=>capitalize.
+type-case=1
+
+# Change the case of the PostgreSQL functions. Default is unchanged: 0.
+# Values: 0=>unchanged, 1=>lowercase, 2=>uppercase, 3=>capitalize.
+function-case=1
+
+# Change space indent, default 4 spaces.
+spaces=4
+
+# Number of column after which lists must be wrapped.
+wrap-after=120
+
+# with --wrap-limit, apply reformatting to comments.
+wrap-comment=120
