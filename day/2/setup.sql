@@ -1,3 +1,5 @@
+-- Setup for day 2
+-- The input is available as :'input'
 CREATE TABLE input (
     id integer NOT NULL,
     start_id bigint NOT NULL,

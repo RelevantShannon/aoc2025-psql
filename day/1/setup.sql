@@ -1,3 +1,5 @@
+-- Setup for day 1
+-- The input is available as :'input'
 CREATE TABLE input (
     id integer NOT NULL,
     rotation bigint NOT NULL
