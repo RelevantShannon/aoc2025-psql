@@ -3,9 +3,4 @@ set -e
 set -u
 set -o pipefail
 
-for file in $(find . -type f -name '*.sql'); do
-    echo "Formatting $file"
-    pg_format \
-        --inplace "$file" \
-        --config ./pg_format.conf
-done
+/Users/shannon/Applications/DataGrip.app/Contents/bin/format.sh -allowDefaults -r ./day
