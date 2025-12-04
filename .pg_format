@@ -23,7 +23,7 @@ function-case=1
 spaces=4
 
 # Number of column after which lists must be wrapped.
-wrap-after=120
+wrap-after=200
 
 # with --wrap-limit, apply reformatting to comments.
-wrap-comment=120
+wrap-comment=200

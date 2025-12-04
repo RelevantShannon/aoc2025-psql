@@ -63,8 +63,7 @@ max_batteries AS (
                         LIMIT 1) AS max_row ON TRUE
                     WHERE
                         -- stop after picking 12 batteries
-                        pick.step <= 12
-)
+                        pick.step <= 12)
                     -- select the max batteries combination after 12 picks
                     -- concatenate the joltage values into a string
                     SELECT
