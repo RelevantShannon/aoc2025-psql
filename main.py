@@ -18,7 +18,9 @@ DB_PASSWORD = "aocpass"
 DB_PORT = 9513
 
 
-def run_command(args: list[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
+def run_command(
+    args: list[str], capture_output: bool = True, check: bool = True
+) -> subprocess.CompletedProcess:
     """Run a command and return the result."""
     return subprocess.run(args, capture_output=capture_output, text=True, check=check)
 
@@ -45,15 +47,25 @@ def create_postgres_container(
         run_command(["docker", "rm", "-f", container_name], check=False)
 
     # Create new container
-    result = run_command([
-        "docker", "run", "-d",
-        "--name", container_name,
-        "-e", f"POSTGRES_DB={db_name}",
-        "-e", f"POSTGRES_USER={db_user}",
-        "-e", f"POSTGRES_PASSWORD={db_password}",
-        "-p", f"{port}:5432",
-        f"postgres:{postgres_version}",
-    ], check=False)
+    result = run_command(
+        [
+            "docker",
+            "run",
+            "-d",
+            "--name",
+            container_name,
+            "-e",
+            f"POSTGRES_DB={db_name}",
+            "-e",
+            f"POSTGRES_USER={db_user}",
+            "-e",
+            f"POSTGRES_PASSWORD={db_password}",
+            "-p",
+            f"{port}:5432",
+            f"postgres:{postgres_version}",
+        ],
+        check=False,
+    )
 
     if result.returncode != 0:
         print("Failed to create container", file=sys.stderr)
@@ -63,8 +75,7 @@ def create_postgres_container(
     max_attempts = 30
     for attempt in range(max_attempts):
         result = run_command(
-            ["docker", "exec", container_name, "pg_isready", "-U", db_user],
-            check=False
+            ["docker", "exec", container_name, "pg_isready", "-U", db_user], check=False
         )
         if result.returncode == 0:
             time.sleep(1)  # Give server a moment to fully initialize
@@ -87,7 +98,7 @@ def run_sql(
     """Run a SQL script and print the output."""
     script_name = os.path.basename(script_path)
 
-    args = ["psql", db_url, "-f", script_path]
+    args = ["psql", db_url, "-f", script_path, "-v", "ON_ERROR_STOP=1"]
 
     if input_content is not None:
         args.extend(["-v", f"input={input_content}"])
@@ -117,7 +128,8 @@ def scaffold_new_day(day: int) -> None:
 
     # Define files to create
     files = {
-        day_dir / "setup.sql": "-- Setup for day {day}\n-- The input is available as :'input'\n",
+        day_dir
+        / "setup.sql": "-- Setup for day {day}\n-- The input is available as :'input'\n",
         day_dir / "part1.sql": "-- Part 1 for day {day}\n",
         day_dir / "part2.sql": "-- Part 2 for day {day}\n",
         inputs_dir / f"day{day}.txt": "",
@@ -191,11 +203,20 @@ def run_day(day: int, part: int, is_test: bool, fast: bool = False) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Advent of Code 2025 SQL Runner")
-    parser.add_argument("-n", "--new", type=int, metavar="DAY", help="Create scaffolding for a new day")
+    parser.add_argument(
+        "-n", "--new", type=int, metavar="DAY", help="Create scaffolding for a new day"
+    )
     parser.add_argument("-d", "--day", type=int, help="Day number (1-25)")
     parser.add_argument("-p", "--part", type=int, choices=[1, 2], help="Part 1 or 2")
-    parser.add_argument("-t", "--test", action="store_true", help="Use test input instead of real input")
-    parser.add_argument("-f", "--fast", action="store_true", help="Skip container setup and run part script only")
+    parser.add_argument(
+        "-t", "--test", action="store_true", help="Use test input instead of real input"
+    )
+    parser.add_argument(
+        "-f",
+        "--fast",
+        action="store_true",
+        help="Skip container setup and run part script only",
+    )
 
     args = parser.parse_args()
 
@@ -206,7 +227,9 @@ def main() -> None:
 
     # Run mode - require day and part
     if args.day is None or args.part is None:
-        parser.error("Running requires both -d/--day and -p/--part (or use -n/--new to scaffold)")
+        parser.error(
+            "Running requires both -d/--day and -p/--part (or use -n/--new to scaffold)"
+        )
 
     run_day(args.day, args.part, args.test, args.fast)
 

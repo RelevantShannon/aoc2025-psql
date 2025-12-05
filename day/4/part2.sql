@@ -54,7 +54,6 @@ WITH RECURSIVE
          FROM new_board,
               paper_stats
          WHERE paper_stats.paper_count != new_board.old_paper_count))
-SELECT
-    -- get the difference between the maximum and minimum paper counts
-    MAX(acc.paper_count) - MIN(acc.paper_count) AS removed_paper_count
+SELECT DISTINCT (acc.step)
 FROM acc
+ORDER BY acc.step DESC
