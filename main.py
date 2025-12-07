@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env uv run python3
 """Advent of Code 2025 SQL Runner. See README.md for usage."""
 
 import argparse
@@ -217,8 +217,25 @@ def main() -> None:
         action="store_true",
         help="Skip container setup and run part script only",
     )
+    parser.add_argument(
+        "-r",
+        "--raw",
+        type=int,
+        metavar="DAY",
+        help="Print test input for a day with newlines escaped for copy-pasting",
+    )
 
     args = parser.parse_args()
+
+    # Raw file output mode
+    if args.raw is not None:
+        file_path = Path(INPUT_DIR) / f"day{args.raw}.test.txt"
+        if not file_path.is_file():
+            print(f"Error: File '{file_path}' does not exist", file=sys.stderr)
+            sys.exit(1)
+        content = file_path.read_text()
+        print(content.replace("\n", "\\n"), end="")
+        return
 
     # New day scaffolding mode
     if args.new is not None:
